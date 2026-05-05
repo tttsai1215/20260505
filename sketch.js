@@ -82,6 +82,23 @@ function draw() {
           line(x1, y1, x2, y2);
         }
       }
+
+      // 臉部最外圍輪廓特徵點 (首尾皆為 10，形成封閉圓圈)
+      let faceOval = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109, 10];
+      
+      stroke(0, 0, 255); // 設定線條為藍色
+      strokeWeight(2);   // 設定線條粗細為 2
+      
+      // 畫出臉部輪廓
+      for (let i = 0; i < faceOval.length - 1; i++) {
+        let p1 = keypoints[faceOval[i]];
+        let p2 = keypoints[faceOval[i + 1]];
+        let x1 = map(p1.x, 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
+        let y1 = map(p1.y, 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
+        let x2 = map(p2.x, 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
+        let y2 = map(p2.y, 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
+        line(x1, y1, x2, y2);
+      }
     }
     
     // 在影像上方的背景區域顯示文字，左右置中
