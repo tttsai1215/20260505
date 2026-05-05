@@ -6,13 +6,18 @@
 
     <title>Sketch</title>
 
+    <!-- 消除 favicon.ico 404 錯誤 -->
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="style.css">
 
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
+    <!-- 載入 ml5.js 函式庫以支援 Facemesh -->
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
   </head>
 
   <body>
-    <script src="sketch.js"></script>
+    <!-- 每次修改可以改變這裡的數字，強制瀏覽器讀取最新檔案 -->
+    <script src="sketch.js?v=2"></script>
   </body>
 </html>

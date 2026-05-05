@@ -2,21 +2,32 @@ let capture;
 let facemesh;
 let predictions = [];
 
+// ⭐ 如果您沒有攝影機，請將此變數設為 false，並在資料夾內準備一張 face.jpg
+let useCamera = false; 
+
+function preload() {
+  // 載入 ml5.js 的 faceMesh 模型 (ml5.js v1.0+ 新版寫法)
+  facemesh = ml5.faceMesh();
+  
+  // 若不使用攝影機，則在程式載入前先讀取靜態圖片
+  if (!useCamera) {
+    capture = loadImage('face.jpg'); 
+  }
+}
+
 function setup() {
   // 建立全螢幕畫布
   createCanvas(windowWidth, windowHeight);
   
-  // 啟動攝影機擷取影像
-  capture = createCapture(VIDEO);
-  
-  // 隱藏預設的 HTML 影片元素，確保影像只會繪製在畫布上
-  capture.hide();
-  
-  // 載入 ml5.js 的 Facemesh 模型
-  facemesh = ml5.facemesh(capture, modelReady);
-  facemesh.on('predict', results => {
-    predictions = results;
-  });
+  if (useCamera) {
+    // 啟動攝影機擷取影像
+    capture = createCapture(VIDEO);
+    capture.hide();
+    facemesh.detectStart(capture, gotFaces); // 影片連續辨識
+  } else {
+    // 針對靜態圖片進行單次辨識
+    facemesh.detect(capture, gotFaces); 
+  }
   
   // 設定影像繪製模式為中心點，方便置中對齊
   imageMode(CENTER);
@@ -26,8 +37,9 @@ function setup() {
   textSize(32);
 }
 
-function modelReady() {
-  console.log('Facemesh 模型載入完成！');
+// 取得辨識結果的回呼函式
+function gotFaces(results) {
+  predictions = results;
 }
 
 function draw() {
@@ -43,7 +55,7 @@ function draw() {
   
   // 繪製 Facemesh 臉部特徵點連線
   if (predictions.length > 0 && capture.width > 0) {
-    let keypoints = predictions[0].scaledMesh;
+    let keypoints = predictions[0].keypoints; // 新版屬性名稱為 keypoints
     // 您所指定的特徵點陣列
     let indices = [409, 270, 269, 267, 0, 37, 39, 40, 185, 61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
     
@@ -55,11 +67,11 @@ function draw() {
       let p1 = keypoints[indices[i]];
       let p2 = keypoints[indices[i + 1]];
       
-      // 因為畫面上影像有進行等比例縮放 (50%) 且置中，所以我們也必須將特徵點對應 (map) 到對應的畫布座標上
-      let x1 = map(p1[0], 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
-      let y1 = map(p1[1], 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
-      let x2 = map(p2[0], 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
-      let y2 = map(p2[1], 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
+      // 新版的 keypoints 結構為 {x, y, z}，取代舊版的 p1[0] 與 p1[1]
+      let x1 = map(p1.x, 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
+      let y1 = map(p1.y, 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
+      let x2 = map(p2.x, 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
+      let y2 = map(p2.y, 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
       
       line(x1, y1, x2, y2);
     }
