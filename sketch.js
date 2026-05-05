@@ -43,24 +43,30 @@ function draw() {
   // 繪製 Facemesh 臉部特徵點連線
   if (predictions.length > 0 && capture.width > 0) {
     let keypoints = predictions[0].keypoints; // 新版屬性名稱為 keypoints
-    // 您所指定的特徵點陣列
-    let indices = [409, 270, 269, 267, 0, 37, 39, 40, 185, 61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
+    
+    // 將兩組需要連線的特徵點放入陣列中方便一起繪製
+    let linesToDraw = [
+      [409, 270, 269, 267, 0, 37, 39, 40, 185, 61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291], // 第一組
+      [76, 77, 90, 180, 85, 16, 315, 404, 320, 307, 306, 408, 304, 303, 302, 11, 72, 73, 74, 184]  // 第二組
+    ];
     
     stroke(255, 0, 0); // 設定線條為紅色
-    strokeWeight(15);  // 設定線條粗細為 15
+    strokeWeight(1);   // 設定線條粗細為 1
     
-    // 依序串接這些特徵點
-    for (let i = 0; i < indices.length - 1; i++) {
-      let p1 = keypoints[indices[i]];
-      let p2 = keypoints[indices[i + 1]];
-      
-      // 新版的 keypoints 結構為 {x, y, z}，取代舊版的 p1[0] 與 p1[1]
-      let x1 = map(p1.x, 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
-      let y1 = map(p1.y, 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
-      let x2 = map(p2.x, 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
-      let y2 = map(p2.y, 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
-      
-      line(x1, y1, x2, y2);
+    // 依序串接這兩組特徵點
+    for (let indices of linesToDraw) {
+      for (let i = 0; i < indices.length - 1; i++) {
+        let p1 = keypoints[indices[i]];
+        let p2 = keypoints[indices[i + 1]];
+        
+        // 新版的 keypoints 結構為 {x, y, z}，取代舊版的 p1[0] 與 p1[1]
+        let x1 = map(p1.x, 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
+        let y1 = map(p1.y, 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
+        let x2 = map(p2.x, 0, capture.width, width / 2 - imgWidth / 2, width / 2 + imgWidth / 2);
+        let y2 = map(p2.y, 0, capture.height, height / 2 - imgHeight / 2, height / 2 + imgHeight / 2);
+        
+        line(x1, y1, x2, y2);
+      }
     }
   }
   
