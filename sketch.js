@@ -2,32 +2,19 @@ let capture;
 let facemesh;
 let predictions = [];
 
-// ⭐ 如果您沒有攝影機，請將此變數設為 false，並在資料夾內準備一張 face.jpg
-let useCamera = false; 
-
 function preload() {
   // 載入 ml5.js 的 faceMesh 模型 (ml5.js v1.0+ 新版寫法)
   facemesh = ml5.faceMesh();
-  
-  // 若不使用攝影機，則在程式載入前先讀取靜態圖片
-  if (!useCamera) {
-    capture = loadImage('face.jpg'); 
-  }
 }
 
 function setup() {
   // 建立全螢幕畫布
   createCanvas(windowWidth, windowHeight);
   
-  if (useCamera) {
-    // 啟動攝影機擷取影像
-    capture = createCapture(VIDEO);
-    capture.hide();
-    facemesh.detectStart(capture, gotFaces); // 影片連續辨識
-  } else {
-    // 針對靜態圖片進行單次辨識
-    facemesh.detect(capture, gotFaces); 
-  }
+  // 啟動攝影機擷取影像
+  capture = createCapture(VIDEO);
+  capture.hide();
+  facemesh.detectStart(capture, gotFaces); // 影片連續辨識
   
   // 設定影像繪製模式為中心點，方便置中對齊
   imageMode(CENTER);
